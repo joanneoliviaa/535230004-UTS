@@ -204,7 +204,7 @@ async function hasilPagination(request, response, next){
     const search = request.query.search || '';
     const sort = request.query.sort || '';
 
-    const total_jumlahUser = await usersService.getTotalUsers();
+    const total_jumlahUser = await usersService.getTotalUsers(search);
     const total_Halaman = await usersService.dapatkanPageNumber(total_jumlahUser, total_userYangDiinginkan);
     const skipBerapa = (page_number - 1) * total_userYangDiinginkan;
     const adaSiapaAja = await usersRepository.cariLewatQuery(search);

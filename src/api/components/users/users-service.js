@@ -24,10 +24,18 @@ async function getUsers() {
 
 /**
  * Get total users 
- * @returns {Promise<number>} - total dari semua user
+ * @params {string} search - menerima parameter dari hasil pencarian data
+ * @returns {Promise<number>} - total dari semua user berdasarkan hasil pencarian
  */
-async function getTotalUsers(){
-  return User.countDocuments();
+async function getTotalUsers(search){
+  if(!search || !search.includes(':')){
+    return usersRepository.getUsers();
+  }
+
+  else{
+    const total_jumlahUser = await usersRepository.cariLewatQuery(search);
+    return total_jumlahUser.length;
+  }
 }
 
 /**
@@ -177,8 +185,8 @@ async function changePassword(userId, password) {
  * @return {object} - mengembalikan hasil perhitungan berupa jumlah halaman
  */
 async function dapatkanPageNumber(total_jumlahUser, total_userYangDiinginkan){
-  const perhitungan_pembulatan = Math.floor(total_jumlahUser/total_userYangDiinginkan);
-  const jumlah_halaman = perhitungan_pembulatan + 1;
+  const jumlah_halaman = Math.ceil(total_jumlahUser/total_userYangDiinginkan);
+  
 
 return jumlah_halaman;
    

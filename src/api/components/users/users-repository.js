@@ -30,7 +30,7 @@ async function cariLewatQuery(search){
   const [emailAtaunama, kataKunci] = search.split(':');
   const objek_yangDicari = {};
 
-  
+
   if (emailAtaunama == 'email' || emailAtaunama == 'name'){
     const biarBisaDicari = new RegExp(`^${kataKunci}`, 'i');
     objek_yangDicari[emailAtaunama] = {$regex: biarBisaDicari};
