@@ -30,8 +30,10 @@ async function cariLewatQuery(search){
   const [emailAtaunama, kataKunci] = search.split(':');
   const objek_yangDicari = {};
 
+  
   if (emailAtaunama == 'email' || emailAtaunama == 'name'){
-    objek_yangDicari[emailAtaunama] = kataKunci;
+    const biarBisaDicari = new RegExp(`^${kataKunci}`, 'i');
+    objek_yangDicari[emailAtaunama] = {$regex: biarBisaDicari};
   }
 
   return User.find(objek_yangDicari);
@@ -43,7 +45,7 @@ async function cariLewatQuery(search){
  * @param {string}  sort - query yang diinput oleh user
  * @retuns {Promise} - berisi array hasil sorting
  */
-async function menyusunData(sort){
+async function menyusunData(sort, users){
   let hasilSorting = {};
 
   if(!sort || !sort.includes(':')){
@@ -52,9 +54,17 @@ async function menyusunData(sort){
 
   else{
     const [sortEmailatauNama, mauAscAtauDesc] = sort.split(':');
-    hasilSorting[sortEmailatauNama] = mauAscAtauDesc == 'desc' ? -1 : 1;
-  }
-  return hasilSorting;
+    const kataKunciUrutan = sortEmailatauNama === 'name' ? 'name' : 'email';
+    const urutannya = mauAscAtauDesc === 'desc' ? -1 : 1;
+
+    users.sort((a,b) => {
+      if(a[kataKunciUrutan] < b[kataKunciUrutan]) return -1 * urutannya;
+      if(a[kataKunciUrutan] > b[kataKunciUrutan]) return 1 * urutannya;
+      return 0
+    });
+
+    return users;
+}
 }
 
 /**
