@@ -17,6 +17,17 @@ async function getUser(id) {
   return User.findById(id);
 }
 
+/** 
+ * Get users by search
+ * @param 
+ */
+
+
+/** 
+ * Sort
+ * 
+ */
+
 /**
  * Create new user
  * @param {string} name - Name

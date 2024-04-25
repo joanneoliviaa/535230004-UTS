@@ -161,6 +161,25 @@ async function changePassword(userId, password) {
   return true;
 }
 
+/**
+ * Get page number
+ * @param {string} total_jumlahUser - total jumlah user yang ada pada database
+ * @param {string} total_userYangDiinginkan - total jumlah user yang diinginkan dalam 1 page
+ * @return {object} 
+ */
+async function dapatkanPageNumber(total_jumlahUser, total_userYangDiinginkan){
+  const perhitungan_pembulatan = Math.floor(total_jumlahUser/total_userYangDiinginkan);
+  const jumlah_halaman = perhitungan_pembulatan + 1;
+
+return dapatkanPageNumber;
+   
+}
+
+/** 
+ * Sorting either ascending (naik) or descending (turun)
+ * 
+ */
+
 module.exports = {
   getUsers,
   getUser,
@@ -169,5 +188,6 @@ module.exports = {
   deleteUser,
   emailIsRegistered,
   checkPassword,
+  dapatkanPageNumber,
   changePassword,
 };
