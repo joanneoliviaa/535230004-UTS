@@ -1,4 +1,5 @@
 const usersService = require('./users-service');
+const usersRepository = require('./users-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 
 /**
@@ -189,6 +190,46 @@ async function changePassword(request, response, next) {
   }
 }
 
+/**
+ * Handle pagination based on user's query
+ * @param {string} request - Express request from user based on query
+ * @param {string} response - Express response to user
+ * @param {string} next - Express route middlewares
+ * @returns {object}
+ */
+async function hasilPagination(request, response, next){
+  try{
+    const page_number = parseInt(request.query.page_number) || 1;
+    const total_userYangDiinginkan = parseInt(request.query.page_size) || 10;
+    const search = request.query.search || '';
+    const sort = request.query.sort || '';
+
+    const total_jumlahUser = await usersService.getTotalUsers();
+    const total_Halaman = await usersService.dapatkanPageNumber(total_jumlahUser, total_userYangDiinginkan);
+    const skipBerapa = (page_number - 1) * total_userYangDiinginkan;
+    const adaSiapaAja = await usersRepository.cariLewatQuery(search);
+    const disusunDulu = await usersRepository.menyusunData(sort, adaSiapaAja);
+    const penggunaNya = disusunDulu.slice(skipBerapa, skipBerapa + total_userYangDiinginkan);
+    const adaSebelumnya = page_number > 1;
+    const adaSelanjutnya = page_number < total_Halaman;
+
+    const output = {
+      "page_number" : page_number,
+      "page_size": total_userYangDiinginkan,
+      "count" : penggunaNya.length,
+      "total_pages": total_Halaman,
+      "has_previous_page": adaSebelumnya,
+      "has_next_page": adaSelanjutnya,
+      "data": penggunaNya,
+  };
+
+  response.status(200).json(output);
+  return response;
+} catch (error){
+  next(error);
+}
+}
+
 module.exports = {
   getUsers,
   getUser,
@@ -196,4 +237,5 @@ module.exports = {
   updateUser,
   deleteUser,
   changePassword,
+  hasilPagination,
 };

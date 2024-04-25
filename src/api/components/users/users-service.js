@@ -22,6 +22,14 @@ async function getUsers() {
 }
 
 /**
+ * Get total users 
+ * @returns {Promise<number>} - total dari semua user
+ */
+async function getTotalUsers(){
+  return User.countDocuments();
+}
+
+/**
  * Get user detail
  * @param {string} id - User ID
  * @returns {Object}
@@ -162,26 +170,22 @@ async function changePassword(userId, password) {
 }
 
 /**
- * Get page number
+ * Get page number and page size based on user's query
  * @param {string} total_jumlahUser - total jumlah user yang ada pada database
  * @param {string} total_userYangDiinginkan - total jumlah user yang diinginkan dalam 1 page
- * @return {object} 
+ * @return {object} - mengembalikan hasil perhitungan berupa jumlah halaman
  */
 async function dapatkanPageNumber(total_jumlahUser, total_userYangDiinginkan){
   const perhitungan_pembulatan = Math.floor(total_jumlahUser/total_userYangDiinginkan);
   const jumlah_halaman = perhitungan_pembulatan + 1;
 
-return dapatkanPageNumber;
+return jumlah_halaman;
    
 }
 
-/** 
- * Sorting either ascending (naik) or descending (turun)
- * 
- */
-
 module.exports = {
   getUsers,
+  getTotalUsers,
   getUser,
   createUser,
   updateUser,

@@ -19,14 +19,43 @@ async function getUser(id) {
 
 /** 
  * Get users by search
- * @param 
+ * @param {string} search - query yang diinput oleh user
+ * @returns {Promise} - berisi data user hasil pencarian
  */
+async function cariLewatQuery(search){
+  if(!search || !search.includes(':')){
+    return [];
+  }
+  
+  const [emailAtaunama, kataKunci] = search.split(':');
+  const objek_yangDicari = {};
 
+  if (emailAtaunama == 'email' || emailAtaunama == 'name'){
+    objek_yangDicari[emailAtaunama] = kataKunci;
+  }
+
+  return User.find(objek_yangDicari);
+
+}
 
 /** 
- * Sort
- * 
+ * Sorting either is ascending (naik) or descending (turun). Sorting by user's name or email
+ * @param {string}  sort - query yang diinput oleh user
+ * @retuns {Promise} - berisi array hasil sorting
  */
+async function menyusunData(sort){
+  let hasilSorting = {};
+
+  if(!sort || !sort.includes(':')){
+    hasilSorting['email'] = 1;
+  }
+
+  else{
+    const [sortEmailatauNama, mauAscAtauDesc] = sort.split(':');
+    hasilSorting[sortEmailatauNama] = mauAscAtauDesc == 'desc' ? -1 : 1;
+  }
+  return hasilSorting;
+}
 
 /**
  * Create new user
@@ -95,6 +124,8 @@ async function changePassword(id, password) {
 module.exports = {
   getUsers,
   getUser,
+  cariLewatQuery,
+  menyusunData,
   createUser,
   updateUser,
   deleteUser,
