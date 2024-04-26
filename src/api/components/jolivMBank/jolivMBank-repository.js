@@ -42,7 +42,7 @@ async function getUserByEmail(email) {
   }
   
 /**
- * Get user by phone number to prevent duplicate phone number
+ * Get account by phone number to prevent duplicate phone number
  * @param {string} noTelepon
  * @returns {Promise}
  */
@@ -50,9 +50,39 @@ async function getUserByPhone(noTelepon){
     return User.findOne({noTelepon});
 }
 
+/**
+ * Get account's name
+ * @param {string} name
+ * @returns {Promise}
+ */
+async function getUserByName(name){
+  return User.findOne({name});
+}
+
+/**
+ * Get user by kodeAkses to prevent duplicate kodeAkses
+ * @param {string} email - Email
+ * @returns {Promise}
+ */
+async function getAccountByKodeAkses(kodeAkses) {
+  return User.findOne({ kodeAkses });
+}
+
+/**
+ * Get account by kodeAkses for login information
+ * @param {string} kodeAkses - Kode akses
+ * @returns {Promise}
+ */
+async function getUserByKodeAkses(kodeAkses) {
+  return User.findOne({ kodeAkses });
+}
+
   module.exports = {
     getAccounts,
     bikinAkun,
+    getUserByName,
     getUserByEmail,
     getUserByPhone,
+    getAccountByKodeAkses,
+    getUserByKodeAkses,
   };

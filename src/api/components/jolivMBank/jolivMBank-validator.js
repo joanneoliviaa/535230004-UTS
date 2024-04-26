@@ -25,4 +25,22 @@ module.exports = {
       pin_Mbank: joi.number().integer().min(6).required().label('Pin Mbank'),
     },
   },
+
+  mauLogin:{
+    body:{
+      kodeAkses: joi.string().required().label('Kode Akses'),
+      password: joiPassword
+        .string()
+        .minOfSpecialCharacters(1)
+        .minOfLowercase(1)
+        .minOfUppercase(1)
+        .minOfNumeric(1)
+        .noWhiteSpaces()
+        .onlyLatinCharacters()
+        .min(6)
+        .max(32)
+        .required()
+        .label('Password'),
+    },
+  },
 };

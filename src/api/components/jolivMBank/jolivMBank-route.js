@@ -15,6 +15,13 @@ module.exports = (app) => {
     jolivMBankControllers.getAccounts(req, res, next).catch(next);
   });
 
+  // User mau login 
+  route.post(
+    '/login',
+    celebrate(jolivMBankValidator.mauLogin),
+    jolivMBankControllers.mauLogin
+  );
+
   // Create user
   route.post(
     '/',

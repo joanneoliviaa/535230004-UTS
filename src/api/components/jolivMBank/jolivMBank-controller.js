@@ -54,6 +54,15 @@ async function bikinAkun(request, response, next) {
         );
       }
 
+    // kodeAkses must be unique
+    const kodeAksesIsRegistered = await jolivMBankService.kodeAksesIsRegistered(kodeAkses);
+    if (kodeAksesIsRegistered) {
+      throw errorResponder(
+        errorTypes.EMAIL_ALREADY_TAKEN,
+        'Kode akses is already registered'
+      );
+    }
+
       //Phone number must be unique
       const noTeleponIsRegistered = await jolivMBankService.noTeleponIsRegistered(noTelepon);
       if (noTeleponIsRegistered){
@@ -74,8 +83,40 @@ async function bikinAkun(request, response, next) {
     }
   }
 
+  /**
+ * Handle login account request
+ * @param {object} request - Express request object
+ * @param {object} response - Express response object
+ * @param {object} next - Express route middlewares
+ * @returns {object} Response object or pass an error to the next route
+ */
+async function mauLogin(request, response, next){
+  const { kodeAkses, password } = request.body;
+
+  try{
+    const loginBerhasil = await jolivMBankService.cekDuluSebelumLogin(
+      kodeAkses,
+      password
+    );
+
+    if(loginBerhasil){
+      return response.status(200).json(loginBerhasil);
+    }
+
+    else{
+      throw errorResponder(errorTypes.BAD_REQUEST,'Gagal login.');
+    }
+  }
+
+  catch(error){
+    next(error);
+  }
+
+}
+
   module.exports = {
     getAccounts,
     bikinAkun,
+    mauLogin,
   };
   

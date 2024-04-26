@@ -16,7 +16,6 @@ async function getAccounts() {
         id: user.id,
         name: user.name,
         email: user.email,
-        saldo: user.saldo,
       });
     }
   
@@ -77,10 +76,52 @@ async function noTeleponIsRegistered(noTelepon) {
     return false;
   }
 
+/**
+ * Check whether the kode akses is registered
+ * @param {string} kodeAkses - kode akses
+ * @returns {boolean}
+ */
+async function kodeAksesIsRegistered(kodeAkses) {
+  const users = await jolivMBankRepository.getAccountByKodeAkses(kodeAkses);
+
+  if (users) {
+    return true;
+  }
+
+  return false;
+}
+
+  /**
+ * Check kodeAkses and password
+ * @param {string} email - Email
+ * @param {string} password - Password
+ * @param {string} name - output yang akan tampil saat user berhasil login
+ * @returns {object} An object containing, among others, the JWT token if the email and password are matched. Otherwise returns null.
+ */
+async function cekDuluSebelumLogin(kodeAkses, password, name){
+  const account = await jolivMBankRepository.getUserByKodeAkses(kodeAkses);
+
+  const userPassword = account ? account.password : '<RANDOM_PASSWORD_FILLER>';
+  const passwordChecked = await passwordMatched(password, userPassword);
+
+  if(!account){
+    return null;
+  }
+  const namaPengguna = account.name;
+  if(kodeAkses && passwordChecked){
+    return {
+      message: `Selamat Datang, ${namaPengguna}!`,
+      saldo: account.saldo,
+    };
+  }
+}
+
   module.exports = {
     getAccounts,
     bikinAkun,
     emailIsRegistered,
     noTeleponIsRegistered,
+    kodeAksesIsRegistered,
+    cekDuluSebelumLogin,
   };
   
