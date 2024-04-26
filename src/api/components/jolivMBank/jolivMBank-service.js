@@ -3,7 +3,28 @@ const { hashPassword, passwordMatched } = require('../../../utils/password');
 const {User} = require('../../../models');
 
 /**
- * Create new user
+ * Get list of accounts
+ * @returns {Array}
+ */
+async function getAccounts() {
+    const users = await jolivMBankRepository.getAccounts();
+  
+    const results = [];
+    for (let i = 0; i < users.length; i += 1) {
+      const user = users[i];
+      results.push({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        saldo: user.saldo,
+      });
+    }
+  
+    return results;
+  }
+
+/**
+ * Create new accounts
  * @param {string} name - Name
  * @param {string} email - Email
  * @param {string} password - Password
@@ -13,12 +34,12 @@ const {User} = require('../../../models');
  * @param {string} pin_Mbank - pin untuk melakukan transaksi
  * @returns {boolean}
  */
-async function bikinAkun(name, email, password, kodeAkses, noTelepon, pin_Mbank) {
+async function bikinAkun(name, email, password, kodeAkses, noTelepon, pin_Mbank, saldo) {
     // Hash password
     const hashedPassword = await hashPassword(password);
   
     try {
-      await jolivMBankRepository.bikinAkun(name, email, hashedPassword, kodeAkses, noTelepon, pin_Mbank);
+      await jolivMBankRepository.bikinAkun(name, email, hashedPassword, kodeAkses, noTelepon, pin_Mbank, saldo);
     } catch (err) {
       return null;
     }
@@ -55,7 +76,9 @@ async function noTeleponIsRegistered(noTelepon) {
   
     return false;
   }
+
   module.exports = {
+    getAccounts,
     bikinAkun,
     emailIsRegistered,
     noTeleponIsRegistered,

@@ -9,6 +9,12 @@ const route = express.Router();
 
 module.exports = (app) => {
   app.use('/jolivMBank', route);
+
+  // Get list of accounts
+  route.get('/', authenticationMiddleware, (req, res, next) => {
+    jolivMBankControllers.getAccounts(req, res, next).catch(next);
+  });
+
   // Create user
   route.post(
     '/',

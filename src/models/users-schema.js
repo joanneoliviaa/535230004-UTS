@@ -9,6 +9,7 @@ const usersSchema = {
   noTelepon: Number,
   confirm_password: String,
   pin_mBank: Number,
+  saldo: Number,
 };
 
 module.exports = usersSchema;

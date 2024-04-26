@@ -1,7 +1,15 @@
 const { User } = require('../../../models');
 
 /**
- * Create new user
+ * Get a list of accounts
+ * @returns {Promise}
+ */
+async function getAccounts() {
+    return User.find({}, {name: 1, saldo: 1, email: 1});
+  }
+
+/**
+ * Create new account
  * @param {string} name - Name
  * @param {string} email - Email
  * @param {string} password - Hashed password
@@ -9,9 +17,10 @@ const { User } = require('../../../models');
  * @param {string} noTelepon - nomor telepon user (harus unik)
  * @param {string} password_confirm - konfirm password harus sama dengan password
  * @param {string} pin_Mbank - pin untuk melakukan transaksi
+ * @params {string} saldo - isi saldo akun 
  * @returns {Promise}
  */
-async function bikinAkun(name, email, password, kodeAkses, noTelepon, pin_Mbank) {
+async function bikinAkun(name, email, password, kodeAkses, noTelepon, pin_Mbank, saldo) {
     return User.create({
       name,
       email,
@@ -19,6 +28,7 @@ async function bikinAkun(name, email, password, kodeAkses, noTelepon, pin_Mbank)
       kodeAkses,
       noTelepon,
       pin_Mbank,
+      saldo,
     });
   }
 
@@ -41,6 +51,7 @@ async function getUserByPhone(noTelepon){
 }
 
   module.exports = {
+    getAccounts,
     bikinAkun,
     getUserByEmail,
     getUserByPhone,
