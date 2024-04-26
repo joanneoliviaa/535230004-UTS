@@ -1,6 +1,6 @@
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const authenticationServices = require('./authentication-service');
-const {User} = require('../../../models');
+const { User } = require('../../../models');
 
 /**
  * Handle login request
@@ -11,35 +11,37 @@ const {User} = require('../../../models');
  */
 async function login(request, response, next) {
   const { email, password } = request.body;
-
+  
   try {
     // Check login credentials
     const loginSuccess = await authenticationServices.checkLoginCredentials(
       email,
       password
     );
-    
+
     if(loginSuccess){
-      await authenticationServices.resetLoginAttempt();
+      await authenticationServices.resetCounter(email);
       return response.status(200).json(loginSuccess);
     }
 
-    else{
-      const aaa = await authenticationServices.hayoUdahKenaLimitBelum(email);
-      if(aaa){
-        await authenticationServices.resetLimitAfterTime();
+    else if(!loginSuccess){
+      const user = await User.findOne({email});
+      const waktuSekarang = Date.now();
+      const dah30menitBlum = new Date(waktuSekarang - 30 * 60 * 1000);
+      if(user.timeStamp_gagalLogin && user.timeStamp_gagalLogin > dah30menitBlum && user.gagalLogin>=5){
+        throw errorResponder(errorTypes.FORBIDDEN, 'Too many failed login attempts.')
       }
-      else{
-        await authenticationServices.naikan_percobaangagalLogin(email);
-        const loveMessage = await authenticationServices.pesanCintaKarenaGagal(email);
-        return response.status(403).json({message: loveMessage})};
-      }
-      }
-    
-    catch(error){
-      return next(error);
+
+      await User.updateOne({email}, {$inc:{gagalLogin:1}, $set:{timeStamp_gagalLogin:Date.now()}});
+      await authenticationServices.pesanCintaKarenaGagal(email);
     }
-   }
+
+    next();
+  }
+   catch (error) {
+    return next(error);
+  }
+}
 
 module.exports = {
   login,

@@ -1,10 +1,8 @@
 const authenticationRepository = require('./authentication-repository');
 const { generateToken } = require('../../../utils/session-token');
 const { passwordMatched } = require('../../../utils/password');
-const {User} = require('../../../models');
-const { errorResponder, errorTypes } = require('../../../core/errors');
-const { P } = require('pino');
-const { gagalLogin } = require('../../../models/users-schema');
+const { User } = require('../../../models');
+
 
 /**
  * Check username and password for login.
@@ -22,22 +20,10 @@ async function checkLoginCredentials(email, password) {
   const userPassword = user ? user.password : '<RANDOM_PASSWORD_FILLER>';
   const passwordChecked = await passwordMatched(password, userPassword);
 
-  if(user){
-    user.terakhirBerhasilLogin = new Date();
-    await user.save();
-  }
   // Because we always check the password (see above comment), we define the
   // login attempt as successful when the `user` is found (by email) and
   // the password matches.
   if (user && passwordChecked) {
-    const waktu = new Date() - user.terakhirBerhasilLogin;
-    const menit = Math.floor(waktu/(1000*60));
-    if(menit>=30 || !user.timeStamp_gagalLogin){
-      user.gagalLogin = 0;
-    }
-
-    user.terakhirBerhasilLogin = new Date();
-    await user.save();
     return {
       email: user.email,
       name: user.name,
@@ -45,74 +31,17 @@ async function checkLoginCredentials(email, password) {
       token: generateToken(user.email, user.id),
     };
   }
-  else{
+
   return null;
-  }
 }
 
 /**
- * @param {string} email - email
- * @returns {number} - Waktu exact nya kapan
+ * @params {string} email - email
+ * @returns {object} 
  */
-async function kapanGagalLogin_latest(email){
-  const ara = await User.findOne({email});
-
-  if(ara){
-    if(ara.timeStamp_gagalLogin){
-      const stemWaktu = new Date(ara.timeStamp_gagalLogin);
-      const waktuSekarang = new Date();
-      const perbedaanWaktu = waktuSekarang - stemWaktu;
-      const perbedaanMenit = Math.floor(perbedaanWaktu/(1000*60));
-      return perbedaanMenit;
-  }
-
-  else{
-    ara.timeStamp_gagalLogin = new Date();
-    await ara.save();
-    return 0;
-  }
-  }
+async function resetCounter(email){
+  return User.updateOne({email}, {gagalLogin:0});
 }
-
-/**
- * @param {string} email - email user
- * @returns {object} - berapa kali user sudah berusaha untuk login
- */
-async function hayoUdahKenaLimitBelum(email){
-  const unknown_user = await User.findOne({email});
-
-  if(unknown_user && unknown_user.gagalLogin >=5){
-    return true;
-  }
-  
-  return false;
-  }
-
-  /**
-   * @params {string} -
-   * @returns
-  */
- async function resetLimitAfterTime(){
-    try{
-      const users = await User.find({gagalLogin: {$gt:4}});
-
-      for(const user of users){
-        const lastFailed = user.timeStamp_gagalLogin;
-        const waktu = new Date() - lastFailed;
-        const menit = Math.floor(waktu/(1000*60));
-        if(menit>=30){
-          user.gagalLogin = 0;
-          user.timeStamp_gagalLogin = 0;
-          await user.save();
-        }
-      }
-    }
-    catch(error){
-      console.error('Error reset limit after time login:', error);
-    }
-  }
-setInterval(resetLimitAfterTime, 30*60*1000);
-
 
 /**
  * @params {string} email - email
@@ -127,57 +56,8 @@ async function pesanCintaKarenaGagal(email){
   }
 }
 
-/**
- * @params {string} - email 
- * @returns {Promise<boolean>}
- */
-async function naikan_percobaangagalLogin(email){
-  try{
-    const pengguna = await User.findOne({email});
-    if(pengguna){
-      pengguna.gagalLogin=(pengguna.gagalLogin||0) +1;
-      pengguna.timeStamp_gagalLogin = new Date();
-
-      await pengguna.save()
-      return true;
-    }
-
-    else{
-      return false;
-    }
-  }
-  catch(error){
-    console.error('Error di fungsi naikan percobaan login', error);
-    return false;
-  }
-}
-
-async function resetLoginAttempt(email){
-  try{
-    const userr = await User.findOne({email});
-    if(userr){
-      userr.gagalLogin = 0;
-      await userr.save();
-      return true;
-    }
-
-    else {
-      return false;
-    }
-  }
-
-  catch(error){
-    console.error('errornya di resetLoginAttempt', error);
-    return false;
-  }
-}
-
 module.exports = {
-  kapanGagalLogin_latest,
   checkLoginCredentials,
-  hayoUdahKenaLimitBelum,
-  resetLimitAfterTime,
+  resetCounter,
   pesanCintaKarenaGagal,
-  naikan_percobaangagalLogin,
-  resetLoginAttempt,
 };
