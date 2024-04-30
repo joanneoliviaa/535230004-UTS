@@ -37,4 +37,12 @@ module.exports = (app) => {
     celebrate(jolivMBankValidator.transaksiBos),
     jolivMBankControllers.transaksiBos
   );
+
+  //User mau ganti pin bank
+  route.patch(
+    '/change-yo-phone/:id',
+    authenticationMiddleware,
+    celebrate(jolivMBankValidator.updateNotelp),
+    jolivMBankControllers.updateNotelp
+  );
 }

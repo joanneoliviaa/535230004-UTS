@@ -112,6 +112,22 @@ async function getSaldoById(id) {
 }
 
 /**
+ * Get kode akses by id 
+ * @param {string} id - id
+ * @returns {Promise}
+ */
+async function getkodeAksesById(id) {
+  const telp = await User.findOne({_id: id});
+  if(telp){
+    return telp.kodeAkses;
+  }
+  
+  else{
+    return null;
+  }
+}
+
+/**
  * @params {string} id - id
  * @returns {Promise} - id akun
  */
@@ -137,6 +153,50 @@ async function saveTransaksi(id, saldo){
   );
 }
 
+/**
+ * Update nomor telepon
+ * @param {string} noTelp
+ * @param {string} kodeAkses
+ * @returns {Promise}
+ */
+async function updateNotelp(id, noTelepon) {
+  return User.updateOne(
+    {
+      _id: id,
+    },
+    {
+      $set: {
+        noTelepon,
+      },
+    }
+  );
+}
+
+/**
+ * Get nomor telp by id
+ * @param {string} id - id
+ * @returns {Promise}
+ */
+async function getUserByPhoneId(id){
+  const tlp_id = await User.findOne({_id: id});
+  if(tlp_id){
+    return tlp_id.noTelepon;
+  }
+  
+  else{
+    return null;
+  }
+}
+
+/**
+ * Delete a user
+ * @param {string} id - User ID
+ * @returns {Promise}
+ */
+async function deleteUser(id) {
+  return User.deleteOne({ _id: id });
+}
+
   module.exports = {
     getAccounts,
     bikinAkun,
@@ -149,4 +209,8 @@ async function saveTransaksi(id, saldo){
     getUser,
     saveTransaksi,
     getNameById,
+    updateNotelp,
+    deleteUser, 
+    getUserByPhoneId,
+    getkodeAksesById,
   };

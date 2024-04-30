@@ -51,4 +51,10 @@ module.exports = {
   },
 },
 
+updateNotelp:{
+  body:{
+    noTelepon: joi.number().integer().min(12).required().label('Nomor Telepon'),
+    kodeAkses: joi.string().required().label('Kode Akses'),
+  }
+},
 };

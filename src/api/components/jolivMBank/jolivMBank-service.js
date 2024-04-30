@@ -127,7 +127,7 @@ async function transaksiBos(idOrangLain, idSendiri, jumlah_uang){
   const dariSiapa = await jolivMBankRepository.getUser(idSendiri);
   const keSiapa = await jolivMBankRepository.getUser(idOrangLain);
 
-  if(dariSiapa && keSiapa){
+  if(dariSiapa != keSiapa){
     let saldoSendiri = await jolivMBankRepository.getSaldoById(idSendiri);
     if(jumlah_uang <= saldoSendiri){
       dariSiapa.saldo -= jumlah_uang;
@@ -138,15 +138,58 @@ async function transaksiBos(idOrangLain, idSendiri, jumlah_uang){
       return true;
       }
       else {
-        throw new Error(`Saldo anda tidak cukup ${jumlah_uang}`);
+        throw new Error("Saldo anda tidak cukup");
       }}
         else {
           return false;
         }
       }
-    
-  
 
+/**
+ * Update nomor telepon
+ * @param {string} id - id
+ * @param {string} kodeAkses - kode akses
+ * @returns {boolean}
+ */
+async function updateNotelp(id, noTelepon) {
+  const user = await jolivMBankRepository.getUser(id);
+
+  // User not found
+  if (!user) {
+    return null;
+  }
+
+  try {
+    await jolivMBankRepository.updateNotelp(id, noTelepon);
+  }
+   catch (err) {
+    return null;
+  }
+
+  return true;
+}
+
+/**
+ * Delete user
+ * @param {string} id - User ID
+ * @returns {boolean}
+ */
+async function deleteUser(id) {
+  const user = await jolivMBankRepository.getUser(id);
+
+  // User not found
+  if (!user) {
+    return null;
+  }
+
+  try {
+    await jolivMBankRepository.deleteUser(id);
+  } catch (err) {
+    return null;
+  }
+
+  return true;
+}
 
   module.exports = {
     getAccounts,
@@ -156,5 +199,7 @@ async function transaksiBos(idOrangLain, idSendiri, jumlah_uang){
     kodeAksesIsRegistered,
     cekDuluSebelumLogin,
     transaksiBos,
+    updateNotelp, 
+    deleteUser, 
   };
   

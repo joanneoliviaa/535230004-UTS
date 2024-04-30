@@ -147,10 +147,78 @@ catch(error){
 }
 }
 
+/**
+ * Handle change user password request
+ * @param {object} request - Express request object
+ * @param {object} response - Express response object
+ * @param {object} next - Express route middlewares
+ * @returns {object} Response object or pass an error to the next route
+ */
+async function updateNotelp(request, response, next) {
+  try {
+    const id = request.params.id;
+    const kodeAkses = request.body.kodeAkses;
+    const noTelepon = request.body.noTelepon;
+
+    //Cek kesamaan kode akses
+    const sama_ga = await jolivMBankRepository.getkodeAksesById(id);
+    if(kodeAkses != sama_ga){
+      throw new Error("Kode akses salah.");
+    }
+    
+    //nomor telepon lama baru ga boleh sama kayak yg baru dan harus unik.
+    const telp_sama = await jolivMBankRepository.getUserByPhoneId(id);
+    const telp_bandingin = await jolivMBankService.noTeleponIsRegistered(noTelepon);
+    if(noTelepon == telp_sama && telp_bandingin){
+      throw new Error("Nomor telepon harus unik.");
+    }
+
+    const changeSuccess = await jolivMBankService.updateNotelp(id, noTelepon);
+      if (!changeSuccess) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Failed to change pin joliv digital bank.'
+      );
+    }
+
+    return response.status(200).json("Nomor telepon berhasil diubah.");
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * Handle delete user request
+ * @param {object} request - Express request object
+ * @param {object} response - Express response object
+ * @param {object} next - Express route middlewares
+ * @returns {object} Response object or pass an error to the next route
+ */
+async function deleteUser(request, response, next) {
+  try {
+    const id = request.params.id;
+
+    const success = await jolivMBankService.deleteUser(id);
+    if (!success) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Failed to delete user'
+      );
+    }
+
+    return response.status(200).json({ id });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
   module.exports = {
     getAccounts,
     bikinAkun,
     mauLogin,
     transaksiBos,
+    updateNotelp,
+    deleteUser,
   };
   

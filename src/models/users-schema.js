@@ -8,7 +8,6 @@ const usersSchema = {
   pin_mBank: Number,
   saldo: Number,
   jumlah_transaksi: Number,
-  berita: String,
 };
 
 module.exports = usersSchema;
