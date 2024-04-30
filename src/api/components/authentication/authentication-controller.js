@@ -1,57 +1,62 @@
+const e = require('express');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const authenticationServices = require('./authentication-service');
-const { User } = require('../../../models');
-const batasWaktu = 30*60*1000;
+const gagalLogin = {};
+
+function simpenwaktuGagal(email){
+  gagalLogin[email] = {
+    timestamp: Date.now(),
+    attempts: 1
+  };
+}
+
 /**
  * Handle login request
  * @param {object} request - Express request object
  * @param {object} response - Express response object
- * @param {objecst} next - Express route middlewares
+ * @param {object} next - Express route middlewares
  * @returns {object} Response object or pass an error to the next route
  */
+
 async function login(request, response, next) {
   const { email, password } = request.body;
-  const user = await User.findOne({email});
-  
+
   try {
+    if(gagalLogin[email] && gagalLogin[email].attempts >= 5){
+      throw errorResponder(errorTypes.FORBIDDEN, `User ${(email)} exceeded maximum login attempt, please try in 30 minutes.`);
+    }
     // Check login credentials
     const loginSuccess = await authenticationServices.checkLoginCredentials(
       email,
       password
     );
 
-    if(!loginSuccess){
-      if(user && user.gagalLogin < 5){
-      await User.updateOne({email}, {$inc:{gagalLogin:1}});
-      await authenticationServices.updateWaktuGagalLogin(email);
-      await authenticationServices.pesanCintaKarenaGagal(email);
+    if (!loginSuccess) {
+      if(!gagalLogin[email]){
+        simpenwaktuGagal(email);
       }
-
       else {
-        if(user && user.gagalLogin >=5 && user.timeStamp_gagalLogin){
-          const rentangWaktu = Date.now() - (user.timeStamp_gagalLogin||0);
-          if(rentangWaktu < batasWaktu) {
-            return errorResponder(errorTypes.ALERT, 'You have tried more than 5 times login attempt. Try to wait for 30 minutes.');
+        gagalLogin[email].attempts++
       }
-    }
-  }
-}
-  
-  else {
-      await authenticationServices.resetCounter(email);
-      return response.status(200).json(loginSuccess);
-      }
-      next();
+      throw errorResponder(errorTypes.INVALID_CREDENTIALS, `Wrong email or password. Login attempt = ${gagalLogin[email].attempts}`);
+      
     }
 
-   catch (error) {
-    console.error('Salah di controller', error);
-    return errorResponder(errorTypes.INTERNAL_SERVER_ERROR,'Error kak');
+    return response.status(200).json(loginSuccess);
+  } catch (error) {
+    return next(error);
   }
 }
+
+setInterval(() => {
+  const waktuSekarang = Date.now();
+  for (const email in gagalLogin){
+    if (waktuSekarang - gagalLogin[email].timestamp >= 30*60*1000){
+      delete gagalLogin[email];
+    }
+  }
+}, 60000);
 
 module.exports = {
   login,
 };
-
-

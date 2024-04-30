@@ -1,8 +1,6 @@
 const authenticationRepository = require('./authentication-repository');
 const { generateToken } = require('../../../utils/session-token');
 const { passwordMatched } = require('../../../utils/password');
-const { User } = require('../../../models');
-
 
 /**
  * Check username and password for login.
@@ -35,50 +33,6 @@ async function checkLoginCredentials(email, password) {
   return null;
 }
 
-/**
- * @params {string} email - email
- * @returns {Promise}  
- */
-async function resetCounter(email){
-  try {
-  return User.updateOne({email}, {gagalLogin:0});
-} 
-catch (error){
-  console.error('Errornya di fungsi service resetCounter', error);
-  throw error;
-}
-}
-
-/**
- * @params {string} email - email
- * @returns {Promise}
- */
-async function updateWaktuGagalLogin(email){
-  try {
-  return await User.updateOne({email}, {timeStamp_gagalLogin:Date.now()});
-}
-catch (error){
-  console.error('Errornya di service updateWaktuGagalLogin', error);
-  throw error;
-}
-}
-
-/**
- * @params {string} email - email
- * @returns {object} 
- */
-async function pesanCintaKarenaGagal(email){
-  const bondoMan = await User.findOne({email});
-
-  if(bondoMan){
-    const suratCinta = `User ${email} gagal login. Attempt = ${bondoMan.gagalLogin ||0}.`;
-    return suratCinta;
-  }
-}
-
 module.exports = {
   checkLoginCredentials,
-  resetCounter,
-  updateWaktuGagalLogin,
-  pesanCintaKarenaGagal,
 };
