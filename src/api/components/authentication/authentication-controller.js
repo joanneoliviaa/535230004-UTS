@@ -1,7 +1,7 @@
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const authenticationServices = require('./authentication-service');
 const { User } = require('../../../models');
-
+const batasWaktu = 30*60*1000;
 /**
  * Handle login request
  * @param {object} request - Express request object
@@ -11,6 +11,7 @@ const { User } = require('../../../models');
  */
 async function login(request, response, next) {
   const { email, password } = request.body;
+  const user = await User.findOne({email});
   
   try {
     // Check login credentials
@@ -19,25 +20,30 @@ async function login(request, response, next) {
       password
     );
 
-    if(loginSuccess){
-      await authenticationServices.resetCounter(email);
-      return response.status(200).json(loginSuccess);
-    }
-
-    else if(!loginSuccess){
-      const user = await User.findOne({email});
-      const waktuSekarang = Date.now();
-      const dah30menitBlum = new Date(waktuSekarang - 30 * 60 * 1000);
-      if(user.timeStamp_gagalLogin && user.timeStamp_gagalLogin > dah30menitBlum && user.gagalLogin>=5){
-        throw errorResponder(errorTypes.FORBIDDEN, 'Too many failed login attempts.')
+    if(!loginSuccess){
+      if(user && user.gagalLogin < 5){
+      await User.updateOne({email}, {$inc:{gagalLogin:1}});
+      await authenticationServices.updateWaktuGagalLogin(email);
+      await authenticationServices.pesanCintaKarenaGagal(email);
       }
 
-      await User.updateOne({email}, {$inc:{gagalLogin:1}, $set:{timeStamp_gagalLogin:Date.now()}});
-      await authenticationServices.pesanCintaKarenaGagal(email);
+      else {
+        if(user && user.gagalLogin >=5 && user.timeStamp_gagalLogin){
+          const rentangWaktu = Date.now() - (user.timeStamp_gagalLogin||0);
+          if(rentangWaktu < batasWaktu) {
+            return errorResponder(errorTypes.ALERT, 'You have tried more than 5 times login attempt. Try to wait for 30 minutes.');
+      }
+    }
+  }
+}
+  
+  else {
+      await authenticationServices.resetCounter(email);
+      return response.status(200).json(loginSuccess);
+      }
+      next();
     }
 
-    next();
-  }
    catch (error) {
     return next(error);
   }
@@ -46,3 +52,5 @@ async function login(request, response, next) {
 module.exports = {
   login,
 };
+
+

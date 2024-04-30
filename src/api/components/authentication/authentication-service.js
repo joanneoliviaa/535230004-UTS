@@ -37,10 +37,30 @@ async function checkLoginCredentials(email, password) {
 
 /**
  * @params {string} email - email
- * @returns {object} 
+ * @returns {Promise}  
  */
 async function resetCounter(email){
+  try {
   return User.updateOne({email}, {gagalLogin:0});
+} 
+catch (error){
+  console.error('Errornya di fungsi service resetCounter', error);
+  throw error;
+}
+}
+
+/**
+ * @params {string} email - email
+ * @returns {Promise}
+ */
+async function updateWaktuGagalLogin(email){
+  try {
+  return await User.updateOne({email}, {timeStamp_gagalLogin:Date.now()});
+}
+catch (error){
+  console.error('Errornya di service updateWaktuGagalLogin', error);
+  throw error;
+}
 }
 
 /**
@@ -59,5 +79,6 @@ async function pesanCintaKarenaGagal(email){
 module.exports = {
   checkLoginCredentials,
   resetCounter,
+  updateWaktuGagalLogin,
   pesanCintaKarenaGagal,
 };
