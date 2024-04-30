@@ -7,6 +7,8 @@ const usersSchema = {
   confirm_password: String,
   pin_mBank: Number,
   saldo: Number,
+  jumlah_transaksi: Number,
+  berita: String,
 };
 
 module.exports = usersSchema;

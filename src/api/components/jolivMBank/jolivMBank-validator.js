@@ -43,4 +43,12 @@ module.exports = {
         .label('Password'),
     },
   },
+
+  transaksiBos: {
+    body:{
+    id: joi.string().required().label('Id tujuan'),
+    jumlah_uang: joi.number().integer().required().label('Jumlah dana transaksi.'),
+  },
+},
+
 };

@@ -29,4 +29,12 @@ module.exports = (app) => {
     celebrate(jolivMBankValidator.bikinAkun),
     jolivMBankControllers.bikinAkun
   );
+
+  //User mau melakukan transaksi 
+  route.put(
+    '/transaction/:id',
+    authenticationMiddleware,
+    celebrate(jolivMBankValidator.transaksiBos),
+    jolivMBankControllers.transaksiBos
+  );
 }

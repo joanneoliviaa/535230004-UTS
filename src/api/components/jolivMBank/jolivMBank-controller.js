@@ -83,7 +83,7 @@ async function bikinAkun(request, response, next) {
     }
   }
 
-  /**
+/**
  * Handle login account request
  * @param {object} request - Express request object
  * @param {object} response - Express response object
@@ -114,9 +114,40 @@ async function mauLogin(request, response, next){
 
 }
 
+/**
+ * Handle transaksi keuangan
+ * @param {object} request - Express request object
+ * @param {object} response - Express response object
+ * @param {object} next - Express route middlewares
+ * @returns {object} Response object or pass an error to the next route
+ */
+async function transaksiBos(request, response, next){
+  try {
+    const idSendiri = request.params.id;
+    const idOrangLain = request.body.id;
+    const jumlah_uang = request.body.jumlah_uang;
+
+    const transaksiYes = await jolivMBankService.transaksiBos(idOrangLain, idSendiri, jumlah_uang);
+    const namaTujuan = await jolivMBankRepository.getNameById(idOrangLain);
+    const namaSendiri = await jolivMBankRepository.getNameById(idSendiri);
+    if (transaksiYes){
+      return response.status(200).json({
+        idTujuan: idOrangLain,
+        namaTujuan: namaTujuan,
+        jumlahTransaksi: jumlah_uang,
+        message: `Selamat! Transaksi anda berhasil, ${namaSendiri}.`
+      });
+      }
+    }
+catch(error){
+  next(error);
+}
+}
+
   module.exports = {
     getAccounts,
     bikinAkun,
     mauLogin,
+    transaksiBos,
   };
   

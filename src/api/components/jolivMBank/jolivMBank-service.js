@@ -96,9 +96,9 @@ async function kodeAksesIsRegistered(kodeAkses) {
  * @param {string} email - Email
  * @param {string} password - Password
  * @param {string} name - output yang akan tampil saat user berhasil login
- * @returns {object} An object containing, among others, the JWT token if the email and password are matched. Otherwise returns null.
+ * @returns {boolean} An object containing, among others, the JWT token if the email and password are matched. Otherwise returns null.
  */
-async function cekDuluSebelumLogin(kodeAkses, password, name){
+async function cekDuluSebelumLogin(kodeAkses, password){
   const account = await jolivMBankRepository.getUserByKodeAkses(kodeAkses);
 
   const userPassword = account ? account.password : '<RANDOM_PASSWORD_FILLER>';
@@ -116,6 +116,38 @@ async function cekDuluSebelumLogin(kodeAkses, password, name){
   }
 }
 
+/**
+ * Untuk melakukan transaksi keuangan, user perlu menginput id tujuan 
+ * @params {string} id - id tujuan 
+ * @params {number} jumlah_transaksi - jumlah transaksi
+ * @params {string} berita - pesan kepada tujuan transaksi (opsional)
+ * @returns {object}
+ */
+async function transaksiBos(idOrangLain, idSendiri, jumlah_uang){
+  const dariSiapa = await jolivMBankRepository.getUser(idSendiri);
+  const keSiapa = await jolivMBankRepository.getUser(idOrangLain);
+
+  if(dariSiapa && keSiapa){
+    let saldoSendiri = await jolivMBankRepository.getSaldoById(idSendiri);
+    if(jumlah_uang <= saldoSendiri){
+      dariSiapa.saldo -= jumlah_uang;
+      keSiapa.saldo += jumlah_uang;
+
+      await jolivMBankRepository.saveTransaksi(idSendiri, dariSiapa.saldo);
+      await jolivMBankRepository.saveTransaksi(idOrangLain, keSiapa.saldo);
+      return true;
+      }
+      else {
+        throw new Error(`Saldo anda tidak cukup ${jumlah_uang}`);
+      }}
+        else {
+          return false;
+        }
+      }
+    
+  
+
+
   module.exports = {
     getAccounts,
     bikinAkun,
@@ -123,5 +155,6 @@ async function cekDuluSebelumLogin(kodeAkses, password, name){
     noTeleponIsRegistered,
     kodeAksesIsRegistered,
     cekDuluSebelumLogin,
+    transaksiBos,
   };
   

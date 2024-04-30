@@ -23,7 +23,7 @@ async function login(request, response, next) {
 
   try {
     if(gagalLogin[email] && gagalLogin[email].attempts >= 5){
-      throw errorResponder(errorTypes.FORBIDDEN, `User ${(email)} exceeded maximum login attempt, please try in 30 minutes.`);
+      throw errorResponder(errorTypes.FORBIDDEN, `User ${(email)} exceeded maximum login attempt, please kindly try again in 30 minutes :)`);
     }
     // Check login credentials
     const loginSuccess = await authenticationServices.checkLoginCredentials(

@@ -59,6 +59,24 @@ async function getUserByName(name){
   return User.findOne({name});
 }
 
+
+/**
+ * Get account's name by id 
+ * @param {string} name
+ * @params {string} id
+ * @returns {Promise}
+ */
+async function getNameById(id){
+  const namaTujuan = User.findOne({_id: id});
+  if(namaTujuan){
+    return namaTujuan.name;
+  }
+  
+  else{
+    return null;
+  }
+}
+
 /**
  * Get user by kodeAkses to prevent duplicate kodeAkses
  * @param {string} email - Email
@@ -77,6 +95,48 @@ async function getUserByKodeAkses(kodeAkses) {
   return User.findOne({ kodeAkses });
 }
 
+/**
+ * Get account by id for transaksi 
+ * @param {string} id - id
+ * @returns {Promise}
+ */
+async function getSaldoById(id) {
+  const norekTujuan = await User.findOne({_id: id});
+  if(norekTujuan){
+    return norekTujuan.saldo;
+  }
+  
+  else{
+    return null;
+  }
+}
+
+/**
+ * @params {string} id - id
+ * @returns {Promise} - id akun
+ */
+async function getUser(id){
+  return User.findOne({_id:id});
+}
+
+/**
+ * @params {string} id - id
+ * @params {number} saldo - saldo 
+ * @returns {Promise}
+ */
+async function saveTransaksi(id, saldo){
+  return User.updateOne(
+    {
+      _id: id,
+    },
+    {
+      $set: {
+        saldo,
+      },
+    }
+  );
+}
+
   module.exports = {
     getAccounts,
     bikinAkun,
@@ -85,4 +145,8 @@ async function getUserByKodeAkses(kodeAkses) {
     getUserByPhone,
     getAccountByKodeAkses,
     getUserByKodeAkses,
+    getSaldoById,
+    getUser,
+    saveTransaksi,
+    getNameById,
   };
