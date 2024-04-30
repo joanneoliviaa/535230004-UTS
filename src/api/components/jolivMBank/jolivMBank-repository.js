@@ -67,7 +67,7 @@ async function getUserByName(name){
  * @returns {Promise}
  */
 async function getNameById(id){
-  const namaTujuan = User.findOne({_id: id});
+  const namaTujuan = await User.findOne({_id: id});
   if(namaTujuan){
     return namaTujuan.name;
   }

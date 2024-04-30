@@ -130,11 +130,14 @@ async function transaksiBos(request, response, next){
     const transaksiYes = await jolivMBankService.transaksiBos(idOrangLain, idSendiri, jumlah_uang);
     const namaTujuan = await jolivMBankRepository.getNameById(idOrangLain);
     const namaSendiri = await jolivMBankRepository.getNameById(idSendiri);
+    const waktuSekarang = new Date();
+
     if (transaksiYes){
       return response.status(200).json({
         idTujuan: idOrangLain,
         namaTujuan: namaTujuan,
         jumlahTransaksi: jumlah_uang,
+        waktuTransaksi: waktuSekarang,
         message: `Selamat! Transaksi anda berhasil, ${namaSendiri}.`
       });
       }
