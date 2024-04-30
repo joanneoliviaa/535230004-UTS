@@ -47,6 +47,8 @@ module.exports = (app) => {
   );
 
   // Delete user
-  route.delete('/:id', authenticationMiddleware, jolivMBankControllers.deleteUser);
+  route.delete('/:id', authenticationMiddleware, 
+  celebrate(jolivMBankValidator.deleteUser),
+  jolivMBankControllers.deleteUser);
 
 }

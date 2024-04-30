@@ -1,6 +1,7 @@
 const jolivMBankService = require('./jolivMBank-service');
 const jolivMBankRepository = require('./jolivMBank-repository');
 const { errorResponder, errorTypes } = require('../../../core/errors');
+const { throttle } = require('lodash');
 
 /**
  * Handle get list of users request
@@ -197,6 +198,27 @@ async function updateNotelp(request, response, next) {
 async function deleteUser(request, response, next) {
   try {
     const id = request.params.id;
+    const email = request.body.email;
+    const name = request.body.name;
+    const password = request.body.password;
+    const pin_Mbank = request.body.pin_Mbank;
+
+    const emailSamaKah = await jolivMBankRepository.cekEmail(id);
+    if(email != emailSamaKah){
+      throw errorResponder(errorTypes.BAD_REQUEST, 'Email harus sama!');
+    }
+    const namaSamaKah = await jolivMBankRepository.cekNama(id);
+    if(name != namaSamaKah){
+      throw errorResponder(errorTypes.BAD_REQUEST, "Nama harus sama!");
+    }
+    const passwordSamaKah = await jolivMBankService.checkPassword(id, password);
+    if(!passwordSamaKah){
+      throw errorResponder(errorTypes.BAD_REQUEST, "Password harus sama!");
+    }
+    const pinSamaKah = await jolivMBankRepository.cekPin(id);
+    if(pin_Mbank != pinSamaKah){
+      throw errorResponder(errorTypes.BAD_REQUEST, `Pin harus sama! ${pinSamaKah}`);
+    }
 
     const success = await jolivMBankService.deleteUser(id);
     if (!success) {

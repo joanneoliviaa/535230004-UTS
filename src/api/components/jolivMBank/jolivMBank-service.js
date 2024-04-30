@@ -191,6 +191,17 @@ async function deleteUser(id) {
   return true;
 }
 
+/**
+ * Check whether the password is correct
+ * @param {string} id- User ID
+ * @param {string} password - Password
+ * @returns {boolean}
+ */
+async function checkPassword(id, password) {
+  const user = await jolivMBankRepository.getUser(id);
+  return passwordMatched(password, user.password);
+}
+
   module.exports = {
     getAccounts,
     bikinAkun,
@@ -201,5 +212,6 @@ async function deleteUser(id) {
     transaksiBos,
     updateNotelp, 
     deleteUser, 
+    checkPassword,
   };
   

@@ -5,7 +5,7 @@ const usersSchema = {
   kodeAkses: String,
   noTelepon: Number,
   confirm_password: String,
-  pin_mBank: Number,
+  pin_Mbank: Number,
   saldo: Number,
   jumlah_transaksi: Number,
 };

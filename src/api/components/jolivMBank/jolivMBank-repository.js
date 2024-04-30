@@ -197,6 +197,55 @@ async function deleteUser(id) {
   return User.deleteOne({ _id: id });
 }
 
+/**
+ * Cek nama
+ * @params {string} id - id
+ * @returns {Promise}
+ */
+async function cekEmail(id){
+  const cekEmail = await User.findOne({_id: id});
+  if(cekEmail){
+    return cekEmail.email;
+  }
+  
+  else{
+    return null;
+  }
+}
+
+/**
+ * Cek nama
+ * @params {string} id - id
+ * @returns {Promise}
+ */
+async function cekNama(id){
+  const cekNama = await User.findOne({_id: id});
+  if(cekNama){
+    return cekNama.name;
+  }
+  
+  else{
+    return null;
+  }
+}
+
+/**
+ * Cek pin
+ * @params {string} id - id
+ * @returns {Promise}
+ */
+async function cekPin(id){
+  const cekPin = await User.findOne({_id: id});
+  if(cekPin){
+    return cekPin.pin_Mbank;
+  }
+  
+  else{
+    return null;
+  }
+}
+
+
   module.exports = {
     getAccounts,
     bikinAkun,
@@ -213,4 +262,7 @@ async function deleteUser(id) {
     deleteUser, 
     getUserByPhoneId,
     getkodeAksesById,
+    cekEmail,
+    cekNama,
+    cekPin,
   };
