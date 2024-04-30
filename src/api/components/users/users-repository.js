@@ -63,8 +63,9 @@ async function menyusunData(sort, users){
       return 0
     });
 
-    return users;
+    
 }
+return users;
 }
 
 /**
