@@ -6,7 +6,7 @@ const batasWaktu = 30*60*1000;
  * Handle login request
  * @param {object} request - Express request object
  * @param {object} response - Express response object
- * @param {object} next - Express route middlewares
+ * @param {objecst} next - Express route middlewares
  * @returns {object} Response object or pass an error to the next route
  */
 async function login(request, response, next) {
@@ -45,7 +45,8 @@ async function login(request, response, next) {
     }
 
    catch (error) {
-    return next(error);
+    console.error('Salah di controller', error);
+    return errorResponder(errorTypes.INTERNAL_SERVER_ERROR,'Error kak');
   }
 }
 

@@ -1,5 +1,4 @@
 const { User } = require('../../../models');
-const { timeStamp_gagalLogin } = require('../../../models/users-schema');
 
 /**
  * Get user by email for login information
