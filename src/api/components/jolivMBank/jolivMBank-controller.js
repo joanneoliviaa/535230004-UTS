@@ -163,14 +163,14 @@ async function updateNotelp(request, response, next) {
     //Cek kesamaan kode akses
     const sama_ga = await jolivMBankRepository.getkodeAksesById(id);
     if(kodeAkses != sama_ga){
-      throw new Error("Kode akses salah.");
+      throw errorResponder(errorTypes.BAD_REQUEST,'Kode akses salah.');
     }
-    
+
     //nomor telepon lama baru ga boleh sama kayak yg baru dan harus unik.
     const telp_sama = await jolivMBankRepository.getUserByPhoneId(id);
     const telp_bandingin = await jolivMBankService.noTeleponIsRegistered(noTelepon);
     if(noTelepon == telp_sama && telp_bandingin){
-      throw new Error("Nomor telepon harus unik.");
+      throw errorResponder(errorTypes.BAD_REQUEST, 'Nomor telepon harus unik.');
     }
 
     const changeSuccess = await jolivMBankService.updateNotelp(id, noTelepon);

@@ -45,4 +45,8 @@ module.exports = (app) => {
     celebrate(jolivMBankValidator.updateNotelp),
     jolivMBankControllers.updateNotelp
   );
+
+  // Delete user
+  route.delete('/:id', authenticationMiddleware, jolivMBankControllers.deleteUser);
+
 }
