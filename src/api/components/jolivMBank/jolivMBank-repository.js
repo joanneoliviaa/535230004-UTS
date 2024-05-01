@@ -96,7 +96,7 @@ async function getUserByKodeAkses(kodeAkses) {
 }
 
 /**
- * Get account by id for transaksi 
+ * Get saldo by id 
  * @param {string} id - id
  * @returns {Promise}
  */
@@ -198,7 +198,7 @@ async function deleteUser(id) {
 }
 
 /**
- * Cek nama
+ * Cek email
  * @params {string} id - id
  * @returns {Promise}
  */

@@ -48,6 +48,7 @@ module.exports = {
     body:{
     id: joi.string().required().label('Id tujuan'),
     jumlah_uang: joi.number().integer().required().label('Jumlah dana transaksi.'),
+    pin_Mbank: joi.number().integer().min(6).required().label('Pin Mbank'),
   },
 },
 

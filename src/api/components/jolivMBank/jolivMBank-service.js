@@ -138,7 +138,7 @@ async function transaksiBos(idOrangLain, idSendiri, jumlah_uang){
       return true;
       }
       else {
-        throw new Error("Saldo anda tidak cukup");
+        throw new Error("Saldo anda tidak cukup. Silahkan isi ulang :D.");
       }}
         else {
           return false;

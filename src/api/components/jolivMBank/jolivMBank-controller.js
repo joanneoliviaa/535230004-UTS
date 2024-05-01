@@ -78,7 +78,12 @@ async function bikinAkun(request, response, next) {
         );
       }
   
-      return response.status(200).json({ name, email, saldo });
+      return response.status(200).json({
+        message: 'Selamat! Akun anda sudah berhasil dibuat dengan detail sebagai berikut',
+        name, 
+        email, 
+        saldo,
+       });
     } catch (error) {
       return next(error);
     }
@@ -127,6 +132,12 @@ async function transaksiBos(request, response, next){
     const idSendiri = request.params.id;
     const idOrangLain = request.body.id;
     const jumlah_uang = request.body.jumlah_uang;
+    const pin_Mbank = request.body.pin_Mbank;
+
+    const pinSama = await jolivMBankRepository.cekPin(idSendiri);
+    if(pin_Mbank != pinSama){
+      throw errorResponder(errorTypes.FORBIDDEN, 'Pin mbank salah. Silahkan coba lagi.');
+    }
 
     const transaksiYes = await jolivMBankService.transaksiBos(idOrangLain, idSendiri, jumlah_uang);
     const namaTujuan = await jolivMBankRepository.getNameById(idOrangLain);
@@ -149,7 +160,7 @@ catch(error){
 }
 
 /**
- * Handle change user password request
+ * Handle change user phone number request
  * @param {object} request - Express request object
  * @param {object} response - Express response object
  * @param {object} next - Express route middlewares
@@ -228,7 +239,9 @@ async function deleteUser(request, response, next) {
       );
     }
 
-    return response.status(200).json({ id });
+    return response.status(200).json({ 
+      message: `Akun dengan nama pengguna ${name} dan id ${id} berhasil dihapus. Sampai jumpa kembali.`
+     });
   } catch (error) {
     return next(error);
   }
