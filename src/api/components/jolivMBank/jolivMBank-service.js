@@ -170,7 +170,7 @@ async function updateNotelp(id, noTelepon) {
 }
 
 /**
- * Delete user
+ * Delete akun user
  * @param {string} id - User ID
  * @returns {boolean}
  */
