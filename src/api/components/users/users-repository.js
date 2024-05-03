@@ -24,7 +24,7 @@ async function getUser(id) {
  */
 async function cariLewatQuery(search){
   if(!search || !search.includes(':')){
-    return [];
+    return User.find({});
   }
   
   const [emailAtaunama, kataKunci] = search.split(':');
@@ -65,6 +65,8 @@ async function menyusunData(sort, users){
 
     
 }
+
+
 return users;
 }
 

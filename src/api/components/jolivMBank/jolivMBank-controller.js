@@ -4,7 +4,7 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 const { throttle } = require('lodash');
 
 /**
- * Handle get list of users request
+ * Handle get list to show user's account 
  * @param {object} request - Express request object
  * @param {object} response - Express response object
  * @param {object} next - Express route middlewares

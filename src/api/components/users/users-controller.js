@@ -156,10 +156,7 @@ async function changePassword(request, response, next) {
   try {
     // Check password confirmation
     if (request.body.password_new !== request.body.password_confirm) {
-      throw errorResponder(
-        errorTypes.INVALID_PASSWORD,
-        'Password confirmation mismatched'
-      );
+      throw errorResponder(errorTypes.INVALID_PASSWORD,'Password salah.');
     }
 
     // Check old password
@@ -200,7 +197,7 @@ async function changePassword(request, response, next) {
 async function hasilPagination(request, response, next){
   try{
     const page_number = parseInt(request.query.page_number) || 1;
-    const total_userYangDiinginkan = parseInt(request.query.page_size) || 10;
+    const total_userYangDiinginkan = parseInt(request.query.page_size) || 100;
     const search = request.query.search || '';
     const sort = request.query.sort || '';
 

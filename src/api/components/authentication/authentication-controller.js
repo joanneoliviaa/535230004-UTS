@@ -52,10 +52,7 @@ setInterval(() => {
   const waktuSekarang = Date.now();
   for (const email in gagalLogin){
     if (waktuSekarang - gagalLogin[email].timestamp >= 30*60*1000){
-      delete gagalLogin[email];
-    }
-  }
-}, 60000);
+      delete gagalLogin[email];}}}, 60000);
 
 module.exports = {
   login,
