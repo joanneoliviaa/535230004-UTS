@@ -38,7 +38,7 @@ module.exports = (app) => {
     jolivMBankControllers.transaksiBos
   );
 
-  //User mau ganti pin bank
+  //User mau ganti nomor telp
   route.patch(
     '/change-yo-phone/:id',
     authenticationMiddleware,
